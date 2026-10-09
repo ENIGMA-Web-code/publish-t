@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Commerce Conversion Funnel & Device Analysis</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --accent-blue: #38bdf8;
+            --accent-purple: #c084fc;
+            --accent-red: #f43f5e;
+            --accent-yellow: #f59e0b;
+            --border: #334155;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            margin-bottom: 2rem;
+        }
+
+        header h1 {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+        }
+
+        header p {
+            color: var(--text-secondary);
+        }
+
+        /* Controls / Filters */
+        .controls {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .filter-btn {
+            background-color: var(--card-bg);
+            color: var(--text-secondary);
+            border: 1px solid var(--border);
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .filter-btn.active, .filter-btn:hover {
+            background-color: var(--accent-blue);
+            color: var(--bg-color);
+            font-weight: 600;
+            border-color: var(--accent-blue);
+        }
+
+        /* Metric Cards Grid */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+            border-radius: 12px;
+        }
+
+        .card h3 {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+        }
+
+        .card .value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--accent-blue);
+        }
+
+        .card .subtext {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-top: 0.3rem;
+        }
+
+        /* Funnel & Transition Sections */
+        .grid-two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        @media(max-width: 900px) {
+            .grid-two-col {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .section-box {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border);
+            padding: 2rem;
+            border-radius: 12px;
+        }
+
+        .section-box h2 {
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .funnel-step {
+            margin-bottom: 1.2rem;
+        }
+
+        .step-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.4rem;
+            font-size: 0.95rem;
+        }
+
+        .bar-bg {
+            background-color: var(--border);
+            border-radius: 6px;
+            height: 20px;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .bar-fill {
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple));
+            height: 100%;
+            border-radius: 6px;
+            transition: width 0.6s ease;
+        }
+
+        /* Transition Leak Table/List */
+        .transition-card {
+            background-color: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--border);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .transition-card h4 {
+            font-size: 0.95rem;
+            color: var(--accent-yellow);
+            margin-bottom: 0.3rem;
+        }
+
+        .transition-card p {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+
+        /* Insight Box */
+        .insight-box {
+            background-color: rgba(244, 63, 94, 0.1);
+            border: 1px solid var(--accent-red);
+            padding: 1.5rem;
+            border-radius: 12px;
+        }
+
+        .insight-box h3 {
+            color: var(--accent-red);
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .insight-box p {
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>E-Commerce Conversion Funnel & Device Analysis</h1>
+            <p>Advanced Portfolio Dashboard | Cumulative Funnel & Consecutive Stage Drop-Off Analysis</p>
+        </header>
+
+        <!-- Device Filter Controls -->
+        <div class="controls">
+            <button class="filter-btn active" onclick="updateDashboard('all')">All Devices</button>
+            <button class="filter-btn" onclick="updateDashboard('Desktop')">Desktop Only</button>
+            <button class="filter-btn" onclick="updateDashboard('Mobile')">Mobile Only</button>
+        </div>
+
+        <!-- Metric Summary Cards -->
+        <div class="metrics-grid">
+            <div class="card">
+                <h3>Total Traffic</h3>
+                <div class="value" id="totalUsers">2,500</div>
+                <div class="subtext">Unique visitors tracked</div>
+            </div>
+            <div class="card">
+                <h3>Cart Conversion</h3>
+                <div class="value" id="cartRate">65.5%</div>
+                <div class="subtext">Viewed item to Add to Cart</div>
+            </div>
+            <div class="card">
+                <h3>Final Purchase Rate</h3>
+                <div class="value" id="purchaseRate">19.0%</div>
+                <div class="subtext">End-to-end conversion</div>
+            </div>
+        </div>
+
+        <!-- Two Column Layout: Funnel & Consecutive Transitions -->
+        <div class="grid-two-col">
+            <!-- Visual Funnel Breakdown -->
+            <div class="section-box">
+                <h2>Cumulative Funnel Stages</h2>
+                
+                <div class="funnel-step">
+                    <div class="step-info">
+                        <span>1. Page View</span>
+                        <span id="step1-count">2,500 users (100%)</span>
+                    </div>
+                    <div class="bar-bg"><div class="bar-fill" id="bar1" style="width: 100%;"></div></div>
+                </div>
+
+                <div class="funnel-step">
+                    <div class="step-info">
+                        <span>2. Add to Cart</span>
+                        <span id="step2-count">1,638 users (65.5%)</span>
+                    </div>
+                    <div class="bar-bg"><div class="bar-fill" id="bar2" style="width: 65.5%;"></div></div>
+                </div>
+
+                <div class="funnel-step">
+                    <div class="step-info">
+                        <span>3. Checkout Start</span>
+                        <span id="step3-count">896 users (35.8%)</span>
+                    </div>
+                    <div class="bar-bg"><div class="bar-fill" id="bar3" style="width: 35.8%;"></div></div>
+                </div>
+
+                <div class="funnel-step">
+                    <div class="step-info">
+                        <span>4. Purchase Complete</span>
+                        <span id="step4-count">475 users (19.0%)</span>
+                    </div>
+                    <div class="bar-bg"><div class="bar-fill" id="bar4" style="width: 19.0%;"></div></div>
+                </div>
+            </div>
+
+            <!-- Consecutive Stage-to-Stage Drop-Off Leaks -->
+            <div class="section-box">
+                <h2>Consecutive Stage Drop-Off Leaks</h2>
+                
+                <div class="transition-card">
+                    <h4>Stage 1 → Stage 2: Page View to Cart</h4>
+                    <p id="trans1"><strong>Calculation:</strong> 1,638 ÷ 2,500 = <strong>65.5% conversion</strong><br><em>34.5% drop-off (862 users dropped off after viewing pages).</em></p>
+                </div>
+
+                <div class="transition-card">
+                    <h4>Stage 2 → Stage 3: Cart to Checkout Start</h4>
+                    <p id="trans2"><strong>Calculation:</strong> 896 ÷ 1,638 = <strong>54.7% conversion</strong><br><strong style="color: var(--accent-yellow);">Leak 1:</strong> 45.3% drop-off (742 users abandoned items in cart without starting checkout).</p>
+                </div>
+
+                <div class="transition-card">
+                    <h4>Stage 3 → Stage 4: Checkout Start to Purchase</h4>
+                    <p id="trans3"><strong>Calculation:</strong> 475 ÷ 896 = <strong>53.0% conversion</strong><br><strong style="color: var(--accent-red);">Leak 2:</strong> 47.0% drop-off (421 users failed to complete payment during checkout).</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Analytical Insight Box -->
+        <div class="insight-box">
+            <h3>Key Analytical Finding & Business Impact</h3>
+            <p id="insightText">
+                Analyzing consecutive stage transitions exposes two distinct revenue leaks: 742 users abandon their carts before initiating checkout (45.3% drop-off), and 421 users drop off during payment processing (47.0% drop-off). Addressing mobile payment friction directly targets this second major leakage point.
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // Data model with explicit drop-off percentages and corrected rounding
+        const data = {
+            all: {
+                total: "2,500",
+                cartRate: "65.5%",
+                purchaseRate: "19.0%",
+                s1: "2,500 users (100%)", w1: "100%",
+                s2: "1,638 users (65.5%)", w2: "65.5%",
+                s3: "896 users (35.8%)", w3: "35.8%",
+                s4: "475 users (19.0%)", w4: "19.0%",
+                t1: "<strong>Calculation:</strong> 1,638 ÷ 2,500 = <strong>65.5% conversion</strong><br><em>34.5% drop-off (862 users dropped off after viewing pages).</em>",
+                t2: "<strong>Calculation:</strong> 896 ÷ 1,638 = <strong>54.7% conversion</strong><br><strong style='color: var(--accent-yellow);'>Leak 1:</strong> 45.3% drop-off (742 users abandoned items in cart without starting checkout).",
+                t3: "<strong>Calculation:</strong> 475 ÷ 896 = <strong>53.0% conversion</strong><br><strong style='color: var(--accent-red);'>Leak 2:</strong> 47.0% drop-off (421 users failed to complete payment during checkout).",
+                insight: "Analyzing consecutive stage transitions exposes two distinct revenue leaks: 742 users abandon their carts before initiating checkout (45.3% drop-off), and 421 users drop off during payment processing (47.0% drop-off). Mobile users experience severe drop-off specifically at checkout completion (15.2% final conversion vs 26.1% desktop)."
+            },
+            Desktop: {
+                total: "875 (35%)",
+                cartRate: "64.5%",
+                purchaseRate: "26.1%",
+                s1: "875 users (100%)", w1: "100%",
+                s2: "564 users (64.5%)", w2: "64.5%",
+                s3: "315 users (36.0%)", w3: "36.0%",
+                s4: "228 users (26.1%)", w4: "26.1%",
+                t1: "<strong>Calculation:</strong> 564 ÷ 875 = <strong>64.5% conversion</strong><br><em>35.5% drop-off (311 users dropped off after viewing pages).</em>",
+                t2: "<strong>Calculation:</strong> 315 ÷ 564 = <strong>55.9% conversion</strong><br><strong style='color: var(--accent-yellow);'>Leak 1:</strong> 44.1% drop-off (249 desktop users abandoned items in cart).",
+                t3: "<strong>Calculation:</strong> 228 ÷ 315 = <strong>72.4% conversion</strong><br><strong style='color: var(--accent-blue);'>Baseline:</strong> 27.6% drop-off (87 user drop-offs during payment progression).",
+                insight: "Desktop users exhibit a stable baseline conversion performance, maintaining a 72.4% successful transition rate from checkout start to final purchase completion."
+            },
+            Mobile: {
+                total: "1,625 (65%)",
+                cartRate: "66.1%",
+                purchaseRate: "15.2%",
+                s1: "1,625 users (100%)", w1: "100%",
+                s2: "1,074 users (66.1%)", w2: "66.1%",
+                s3: "581 users (35.7%)", w3: "35.7%",
+                s4: "247 users (15.2%)", w4: "15.2%",
+                t1: "<strong>Calculation:</strong> 1,074 ÷ 1,625 = <strong>66.1% conversion</strong><br><em>33.9% drop-off (551 users dropped off after viewing pages).</em>",
+                t2: "<strong>Calculation:</strong> 581 ÷ 1,074 = <strong>54.1% conversion</strong><br><strong style='color: var(--accent-yellow);'>Leak 1:</strong> 45.9% drop-off (493 mobile users abandoned items in cart).",
+                t3: "<strong>Calculation:</strong> 247 ÷ 581 = <strong>42.5% conversion</strong><br><strong style='color: var(--accent-red);'>CRITICAL LEAK 2:</strong> 57.5% drop-off (334 mobile users failed at checkout payment completion).",
+                insight: "CRITICAL FINDING: Mobile checkout transition drops sharply to 42.5% (57.5% drop-off rate, compared to desktop's 27.6%). 334 mobile users abandon the final payment step, indicating potential mobile UI friction or payment gateway failure."
+            }
+        };
+
+        function updateDashboard(filter) {
+            // Update button active state
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // Load selected filter data
+            const d = data[filter];
+            document.getElementById('totalUsers').innerText = d.total;
+            document.getElementById('cartRate').innerText = d.cartRate;
+            document.getElementById('purchaseRate').innerText = d.purchaseRate;
+
+            document.getElementById('step1-count').innerText = d.s1;
+            document.getElementById('bar1').style.width = d.w1;
+
+            document.getElementById('step2-count').innerText = d.s2;
+            document.getElementById('bar2').style.width = d.w2;
+
+            document.getElementById('step3-count').innerText = d.s3;
+            document.getElementById('bar3').style.width = d.w3;
+
+            document.getElementById('step4-count').innerText = d.s4;
+            document.getElementById('bar4').style.width = d.w4;
+
+            document.getElementById('trans1').innerHTML = d.t1;
+            document.getElementById('trans2').innerHTML = d.t2;
+            document.getElementById('trans3').innerHTML = d.t3;
+
+            document.getElementById('insightText').innerText = d.insight;
+        }
+    </script>
+</body>
+</html>
